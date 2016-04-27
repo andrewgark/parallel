@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1461709637 source:c:\users\Андрей\documents\c++\roma\b\main.cpp
+	<iostream>
+	<random>
+	<thread>
+	<mutex>
+	<chrono>
+	<ctime>
+
