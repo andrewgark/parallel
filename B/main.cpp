@@ -29,6 +29,20 @@ struct SameCacheLine {
     SameCacheLine() : a(0), b(0) {}
 };
 
+void changeVariables (long long &a, long long &b) {
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    vector<thread> v;
+    v.push_back(thread(change, ref(a)));
+    v.push_back(thread(change, ref(b)));
+    v[0].join();
+    v[1].join();
+    end = std::chrono::system_clock::now();
+    int ms = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
+    cout << "cache line works for " << ms << " milliseconds\n";
+
+}
+
 int main() {
     cout << "hardware_concurrency: " << thread::hardware_concurrency() << "\n";
     cout << "Processor: Intel Pentium 2117U\n";
@@ -38,27 +52,8 @@ int main() {
     SameCacheLine same;
     DifferentCacheLine different;
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-    vector<thread> v;
-    v.push_back(thread(change, ref(same.a)));
-    v.push_back(thread(change, ref(same.b)));
-    v[0].join();
-    v[1].join();
-    end = std::chrono::system_clock::now();
-    int ms = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
-    cout << "same cache line: works for " << ms << " milliseconds\n";
-
-
-    start = std::chrono::system_clock::now();
-    v.resize(0);
-    v.push_back(thread(change, ref(different.a)));
-    v.push_back(thread(change, ref(different.b)));
-    v[0].join();
-    v[1].join();
-    end = std::chrono::system_clock::now();
-    ms = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
-    cout << "different cache lines: works for " << ms << " milliseconds\n";
+    changeVariables(same.a, same.b);
+    changeVariables(different.a, different.b);
 
     return 0;
 }
